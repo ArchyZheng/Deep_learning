@@ -9,11 +9,9 @@ from model import Resnet
 # %%
 np.random.seed(123)
 transform = transforms.Compose(
-    [transforms.ToTensor(),
-     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-tempset = torchvision.datasets.CIFAR10(
+    [transforms.ToTensor()])
+tempset = torchvision.datasets.CIFAR100(
     root='./data', train=True, download=True, transform=transform)
-
 trainset, valset = data.random_split(tempset, [40000, 10000], generator=torch.Generator().manual_seed(0))
 
 train_loader = torch.utils.data.DataLoader(
@@ -30,8 +28,6 @@ test_set = torchvision.datasets.CIFAR10(
 test_dataloader = torch.utils.data.DataLoader(
     test_set, batch_size=256, shuffle=False, num_workers=2)
 
-classes = ('plane', 'car', 'bird', 'cat', 'deer',
-           'dog', 'frog', 'horse', 'ship', 'truck')
 # %%
 train = pl.Trainer(max_epochs=150)
 model = Resnet()

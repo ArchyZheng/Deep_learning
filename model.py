@@ -11,7 +11,7 @@ class Resnet(pl.LightningModule):
     def __init__(self):
         super().__init__()
         self.model = torchvision.models.resnet18()
-        self.output = torch.nn.Sequential(torch.nn.ReLU(), torch.nn.Linear(1000, 10))
+        self.output = torch.nn.Sequential(torch.nn.ReLU(), torch.nn.Linear(1000, 100))
 
     def forward(self, x):
         prediction = self.output(self.model(x))
@@ -26,7 +26,7 @@ class Resnet(pl.LightningModule):
         y_hat = self.model(x)
         y_hat = self.output(y_hat)
         loss_function = torch.nn.BCEWithLogitsLoss()
-        label = F.one_hot(y, num_classes=10).float()
+        label = F.one_hot(y, num_classes=100).float()
         loss = loss_function(y_hat, label)
 
         self.log('train_loss:', loss)
