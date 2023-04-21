@@ -1,7 +1,4 @@
 import pytorch_lightning as pl
-import numpy as np
-from torchvision import transforms
-import torch.utils.data as data
 import torchvision
 import torch
 import torch.nn.functional as F
@@ -10,6 +7,7 @@ import torch.nn.functional as F
 class Resnet(pl.LightningModule):
     def __init__(self):
         super().__init__()
+        self.save_hyperparameters()
         self.model = torchvision.models.resnet18()
         self.output = torch.nn.Sequential(torch.nn.ReLU(), torch.nn.Linear(1000, 100))
 
@@ -29,7 +27,7 @@ class Resnet(pl.LightningModule):
         label = F.one_hot(y, num_classes=100).float()
         loss = loss_function(y_hat, label)
 
-        self.log('train_loss:', loss)
+        self.log('train_loss:', loss, on_step=True, on_epoch=True)
         return loss
 
     def validation_step(self, val_batch, val_idx):
@@ -40,4 +38,4 @@ class Resnet(pl.LightningModule):
         label = F.one_hot(y, num_classes=100).float()
         loss = loss_function(y_hat, label)
 
-        self.log('val_loss', loss)
+        self.log('val_loss', loss, on_step=True, on_epoch=True)

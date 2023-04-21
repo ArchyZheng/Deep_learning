@@ -1,3 +1,4 @@
+# %%
 import pytorch_lightning as pl
 import torch
 import torchvision
@@ -6,6 +7,8 @@ import numpy as np
 from torchvision import transforms
 import torch.utils.data as data
 from model import Resnet
+from pytorch_lightning.loggers import WandbLogger
+
 # %%
 np.random.seed(123)
 transform = transforms.Compose(
@@ -29,6 +32,8 @@ test_dataloader = torch.utils.data.DataLoader(
     test_set, batch_size=256, shuffle=False, num_workers=2)
 
 # %%
-train = pl.Trainer(max_epochs=150)
+
+wandb_logger = WandbLogger(project="Baseline", name="test_chengqi")
+train = pl.Trainer(logger=wandb_logger, max_epochs=150, log_every_n_steps=1)
 model = Resnet()
 train.fit(model=model, train_dataloaders=train_loader)
