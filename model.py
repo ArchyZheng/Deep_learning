@@ -37,6 +37,7 @@ class Resnet(pl.LightningModule):
         y_hat = self.model(x)
         y_hat = self.output(y_hat)
         loss_function = torch.nn.BCEWithLogitsLoss()
-        loss = loss_function(y_hat, y)
+        label = F.one_hot(y, num_classes=100).float()
+        loss = loss_function(y_hat, label)
 
         self.log('val_loss', loss)
