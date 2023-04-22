@@ -16,26 +16,32 @@ class Resnet(pl.LightningModule):
         return prediction
 
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
+        optimizer = torch.optim.SGD(self.parameters(), lr=1e-2, momentum=0.9)
         return optimizer
 
     def training_step(self, train_batch, batch_idx):
         x, y = train_batch
         y_hat = self.model(x)
         y_hat = self.output(y_hat)
-        loss_function = torch.nn.BCEWithLogitsLoss()
+        loss_function = torch.nn.CrossEntropyLoss()
         label = F.one_hot(y, num_classes=100).float()
         loss = loss_function(y_hat, label)
 
+        _, predicted = torch.max(y_hat, 1)
+        accuracy = torch.sum(predicted == y).item() / len(y)
         self.log('train_loss:', loss, on_step=True, on_epoch=True)
+        self.log('train_accuracy', accuracy, on_step=True, on_epoch=True)
         return loss
 
     def validation_step(self, val_batch, val_idx):
         x, y = val_batch
         y_hat = self.model(x)
         y_hat = self.output(y_hat)
-        loss_function = torch.nn.BCEWithLogitsLoss()
+        loss_function = torch.nn.CrossEntropyLoss()
         label = F.one_hot(y, num_classes=100).float()
         loss = loss_function(y_hat, label)
 
-        self.log('val_loss', loss, on_step=True, on_epoch=True)
+        _, predicted = torch.max(y_hat, 1)
+        accuracy = torch.sum(predicted == y).item() / len(y)
+        self.log('train_loss:', loss, on_step=True, on_epoch=True)
+        self.log('train_accuracy', accuracy, on_step=True, on_epoch=True)
